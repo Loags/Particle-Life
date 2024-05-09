@@ -2,14 +2,30 @@ import controlP5.*;
 
 class UI {
   ControlP5 cp5;
-  GravitationMatrix gravitationMatrix;
 
   UI(ParticleLife _particleLife) {
     cp5 = new ControlP5(_particleLife);
+    
     cp5.addSlider("simulationSpeed").setPosition(20, 20).setWidth(200).setRange(0, 5).setValue(1);
-    cp5.addSlider("gravitationalConstant").setPosition(20, 40).setWidth(200).setRange(0, 10).setValue(1);
-
-    gravitationMatrix = new GravitationMatrix();
+    cp5.addSlider("gravitationalConstant").setPosition(20, 40).setWidth(200).setRange(0, 5).setValue(1);
+    cp5.addButton("Toggle Matrix").setPosition(60, 65).setSize(100, 20).onClick(new CallbackListener() {
+      public void controlEvent(CallbackEvent event) {
+        gravitationMatrix.isVisible = !gravitationMatrix.isVisible;
+      }
+    }
+    );
+    cp5.addButton("Shuffle Matrix").setPosition(60, 90).setSize(100, 20).onPress(new CallbackListener() {
+      public void controlEvent(CallbackEvent event) {
+        gravitationMatrix.ShuffleMatrix();
+      }
+    }
+    );
+    cp5.addButton("Reset Matrix").setPosition(60, 115).setSize(100, 20).onPress(new CallbackListener() {
+      public void controlEvent(CallbackEvent event) {
+        gravitationMatrix.ResetMatrix();
+      }
+    }
+    );
   }
 
   void Render() {

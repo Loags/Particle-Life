@@ -1,8 +1,8 @@
 class Life {
   ArrayList<Particle> particles;
 
-  Life(ArrayList<Particle> particles) {
-    this.particles = particles;
+  Life(ArrayList<Particle> _particles) {
+    this.particles = _particles;
   }
 
   void Update() {
@@ -10,7 +10,7 @@ class Life {
       Particle p = particles.get(i);
       for (int j = 0; j < particles.size(); j++) {
         if (i != j) {
-          p.Attract(particles.get(j));
+          p.Attract(particles.get(j), gravitationMatrix.gravMatrix);
         }
       }
       p.Update();

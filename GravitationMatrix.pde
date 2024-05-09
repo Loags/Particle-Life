@@ -1,52 +1,84 @@
-float[][] gravMatrix;
-
 class GravitationMatrix {
+  float[][] gravMatrix;
   int cellSize = 40;
   int numTypes;
-  PVector[] typePositions; // For drawing labels
+  boolean isVisible = true;
+  int matrixStartX = 50;
+  int matrixStartY = 175;
 
   GravitationMatrix() {
     this.numTypes = ParticleType.values().length;
     gravMatrix = new float[numTypes][numTypes];
-    typePositions = new PVector[numTypes];
     for (int i = 0; i < numTypes; i++) {
       for (int j = 0; j < numTypes; j++) {
-        gravMatrix[i][j] = 0.0; // default attraction value
+        if (i == j)
+          gravMatrix[i][j] = 1.0; // default attraction value same types
+        else
+          gravMatrix[i][j] = 0.0; // default attraction value different types
       }
-      typePositions[i] = new PVector(650 + i * cellSize + cellSize / 2, 50); // Position for labels above matrix
     }
   }
 
   void Render() {
+    if (!isVisible) return;
+
     textAlign(CENTER, CENTER);
     textSize(12);
     for (int i = 0; i < numTypes; i++) {
-      // Draw the type labels
       fill(GetColorForType(i));
-      ellipse(typePositions[i].x, typePositions[i].y, cellSize / 2, cellSize / 2);
-      ellipse(600, 100 + i * cellSize + cellSize / 2, cellSize / 2, cellSize / 2);
+      ellipse(matrixStartX - 40 + cellSize / 2, matrixStartY + i * cellSize + cellSize / 2, cellSize / 2, cellSize / 2);
+      ellipse(matrixStartX + i * cellSize + cellSize / 2, matrixStartY - 40 + cellSize / 2, cellSize / 2, cellSize / 2);
 
       for (int j = 0; j < numTypes; j++) {
         float val = gravMatrix[i][j];
         int colorValue = (int) map(val, -1, 1, 0, 255);
-        fill(color(255 - colorValue, colorValue, 0));  // Interpolate between red and green
-        rect(650 + j * cellSize, 100 + i * cellSize, cellSize, cellSize);
+        fill(color(255 - colorValue, colorValue, 0));
+        rect(matrixStartX + j * cellSize, matrixStartY + i * cellSize, cellSize, cellSize);
+
+        // Display the value of gravMatrix[i][j] inside the corresponding cell
+        fill(255);
+        text(nf(val, 0, 2), matrixStartX + j * cellSize + cellSize / 2, matrixStartY + i * cellSize + cellSize / 2);
       }
     }
   }
 
   void InputGravitationMatrix() {
-    if (mouseX >= 650 && mouseX <= 650 + numTypes * cellSize &&
-      mouseY >= 100 && mouseY <= 100 + numTypes * cellSize) {
-      int i = (mouseY - 100) / cellSize;
-      int j = (mouseX - 650) / cellSize;
+    // Check if the mouse is within the bounds of the matrix
+    if (mouseX >= matrixStartX && mouseX <= matrixStartX + numTypes * cellSize &&
+      mouseY >= matrixStartY && mouseY <= matrixStartY + numTypes * cellSize) {
+      // Calculate which cell is clicked based on mouse position
+      int i = (mouseY - matrixStartY) / cellSize;
+      int j = (mouseX - matrixStartX) / cellSize;
+
+      // Check if the calculated indices are within the bounds of the matrix
       if (i >= 0 && i < numTypes && j >= 0 && j < numTypes) {
         if (mouseButton == LEFT) {
           gravMatrix[i][j] -= 0.2;
         } else if (mouseButton == RIGHT) {
           gravMatrix[i][j] += 0.2;
         }
+
+        // Ensure the matrix values are constrained between -1 and 1
         gravMatrix[i][j] = constrain(gravMatrix[i][j], -1, 1);
+      }
+    }
+  }
+
+  void ShuffleMatrix() {
+    for (int i = 0; i < numTypes; i++) {
+      for (int j = 0; j < numTypes; j++) {
+        gravMatrix[i][j] = random(-1.0, 1.0);
+      }
+    }
+  }
+
+  void ResetMatrix() {
+    for (int i = 0; i < numTypes; i++) {
+      for (int j = 0; j < numTypes; j++) {
+        if (i == j)
+          gravMatrix[i][j] = 1.0; // default attraction value same types
+        else
+          gravMatrix[i][j] = 0.0; // default attraction value different types
       }
     }
   }

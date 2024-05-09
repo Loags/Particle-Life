@@ -51,8 +51,8 @@ class Particle {
   }
 
   void Update() {
-    position.add(velocity);
     LimitVelocity();
+    position.add(velocity);
     CheckEdges();
   }
 
@@ -66,24 +66,36 @@ class Particle {
   void ApplyForce(PVector force) {
     PVector f = PVector.div(force, mass);
     velocity.add(f);
-    velocity.mult(0.99); // Damping the speed
+    //velocity.mult(0.99); // Damping the speed
   }
 
-  void Attract(Particle other) {
+  void Attract(Particle other, float[][] gravMatrix) {
+    int thisTypeIndex = this.type.ordinal();
+    int otherTypeIndex = other.type.ordinal();
+
+    // Fetch the gravitational multiplier from the matrix
+    float forceMultiplier = gravMatrix[thisTypeIndex][otherTypeIndex];
+
     PVector force = PVector.sub(other.position, this.position);
     float distance = force.mag();
-    force.normalize();
 
-    if (distance < 25) {
-      float repulsiveStrength = -50 / (distance * distance);
-      force.mult(repulsiveStrength);
-      this.ApplyForce(force);
-    } else if (this.type == other.type && distance < 100) {
-      float attractiveStrength = (gravitationalConstant * this.mass * other.mass) / (distance * distance);
-      force.mult(attractiveStrength);
+    if (distance > 0) {
+      force.normalize();
+      float strength;
+
+      if (distance < 10) {  // Threshold distance for repulsion
+        // Apply a repulsive force if they get too close
+        strength = -100 / (distance * distance);  // Repulsion force, stronger at closer distances
+      } else {
+        // Apply normal attraction force
+        strength = (forceMultiplier * gravitationalConstant * this.mass * other.mass) / (distance * distance);
+      }
+
+      force.mult(strength);
       this.ApplyForce(force);
     }
   }
+
 
   void CheckEdges() {
     if (position.x < 0 - radius * 2) {

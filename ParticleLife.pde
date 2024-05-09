@@ -1,5 +1,6 @@
 UI ui;
 Life life;
+GravitationMatrix gravitationMatrix;
 
 ArrayList<Particle> particles;
 float gravitationalConstant = 1;
@@ -16,10 +17,11 @@ void setup() {
   for (int i = 0; i < 1000; i++) {
     float spawnPosX = random(width);
     float spawnPosY = random(height);
-    ParticleType pType = ParticleType.values()[int(random(0,(float)ParticleType.values().length))];
+    ParticleType pType = ParticleType.values()[int(random(0, (float)ParticleType.values().length))];
     particles.add(new Particle(new PVector(spawnPosX, spawnPosY), pType));
   }
 
+  gravitationMatrix = new GravitationMatrix();
   life = new Life(particles);
 }
 
@@ -31,10 +33,9 @@ void draw() {
     life.Update();
   }
   life.Render();
-
   ui.Render();
 }
 
 void mousePressed() {
-  ui.gravitationMatrix.InputGravitationMatrix();
+  gravitationMatrix.InputGravitationMatrix();
 }
