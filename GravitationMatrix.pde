@@ -9,14 +9,38 @@ class GravitationMatrix {
   GravitationMatrix() {
     this.numTypes = ParticleType.values().length;
     gravMatrix = new float[numTypes][numTypes];
+
+    InitializeDefaultMatrix();
+  }
+
+  void InitializeDefaultMatrix() {
     for (int i = 0; i < numTypes; i++) {
       for (int j = 0; j < numTypes; j++) {
         if (i == j)
           gravMatrix[i][j] = 1.0; // default attraction value same types
         else
-          gravMatrix[i][j] = 0.0; // default attraction value different types
+          gravMatrix[i][j] = -1; // default attraction value different types
       }
     }
+  }
+
+  void ModifyGravMatrix() {
+    int counter = 0;
+    for (int i = 0; i < numTypes; i++) {
+      for (int j = 0; j < numTypes; j++) {
+        if (i == j) {
+          gravMatrix[i][j] = 1.0;  // Strong attraction to same type
+        } else if (abs(i - j) == 1) {
+          if (counter % 2 == 0) // Only the upper fields
+            gravMatrix[i][j] = 0.5;  // Weaker attraction to adjacent types
+          counter+=1;
+        } else {
+          gravMatrix[i][j] = 0;    // No attraction to distant types
+        }
+      }
+    }
+    // Set the bottom-left entry of the matrix to -0.5 explicitly
+    gravMatrix[numTypes - 1][0] = -0.5; // Assuming numTypes indexes are 0-based
   }
 
   void Render() {
