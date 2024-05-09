@@ -1,6 +1,30 @@
 public enum ParticleType {
-  red, green, blue
+  red,
+    green,
+    blue,
+    //lightblue,
+    //pink,
+    //yellow
 };
+
+int GetColorForType(int typeIndex) {
+  switch (typeIndex) {
+  case 0:
+    return color(255, 0, 0); // Red
+  case 1:
+    return color(0, 255, 0); // Green
+  case 2:
+    return color(0, 0, 255); // Blue
+  case 3:
+    return color(0, 255, 255); // Light Blue
+  case 4:
+    return color(255, 0, 255); // Pink
+  case 5:
+    return color(255, 255, 0); // Yellow
+  default:
+    return color(100); // Gray for undefined types
+  }
+}
 
 class Particle {
   PVector position;
@@ -19,13 +43,7 @@ class Particle {
   }
 
   void Render() {
-    color c = color(0, 0, 0);
-    if (type == ParticleType.red)
-      c = color(255, 0, 0);
-    else if (type == ParticleType.green)
-      c = color(0, 255, 0);
-    else if (type == ParticleType.blue)
-      c = color(0, 0, 255);
+    color c = GetColorForType(type.ordinal());
 
     fill(c);
     noStroke();
